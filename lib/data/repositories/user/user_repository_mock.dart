@@ -7,7 +7,7 @@ class UserRepositoryMock extends UserRepository {
     id: 'u001',
     name: 'ronan the best ',
     email: 'ronan@example.com',
-    activeSubscription: null, //  test pel ot sub
+    activeSubscription: null, //  test pel ot 
   );
 
   @override
