@@ -6,6 +6,7 @@ import 'package:joulkong/ui/screens/map/widgets/station_marker.dart';
 import 'package:joulkong/ui/utils/async_value.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
+import 'package:joulkong/ui/screens/booking/booking_screen.dart';
 
 class MapContent extends StatelessWidget {
   const MapContent({super.key});
@@ -45,8 +46,13 @@ class MapContent extends StatelessWidget {
             child: StationMarker(
               number: index,
               onTap: () {
-                debugPrint('Tapped: ${station.name}');
-              },
+              showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (_) => BookingScreen(station: station),
+            );
+            },
             ),
           );
         }).toList();

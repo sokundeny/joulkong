@@ -1,5 +1,9 @@
 
 import 'package:flutter/material.dart';
+import 'package:joulkong/data/repositories/stations/station_repository.dart';
+import 'package:joulkong/data/repositories/stations/station_repository_mock.dart';
+import 'package:joulkong/data/repositories/user/user_repository.dart' show UserRepository;
+import 'package:joulkong/data/repositories/user/user_repository_mock.dart';
 import 'package:joulkong/ui/screens/map/map_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:joulkong/ui/theme/theme.dart';
@@ -7,9 +11,16 @@ import 'package:joulkong/ui/theme/theme.dart';
 void mainCommon(List<InheritedProvider> providers) {
   runApp(
     MultiProvider(
-      providers: providers,
-      child: MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()),
-    ),
+      providers: [
+        Provider<StationRepository>(
+          create: (_) => StationRepositoryMock(),
+        ),
+        Provider<UserRepository>(
+          create: (_) => UserRepositoryMock(),
+        ),
+      ],
+      child: const MyApp(),
+    )
   );
 }
 
