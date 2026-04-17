@@ -1,4 +1,6 @@
 
+import 'package:joulkong/data/repositories/stations/station_repository.dart';
+import 'package:joulkong/data/repositories/stations/station_repository_mock.dart';
 import 'package:provider/provider.dart';
 import 'main_common.dart';
 
@@ -6,6 +8,7 @@ import 'main_common.dart';
 List<InheritedProvider> get devProviders {
 
   return [
+    Provider<StationRepository>(create: (_) => StationRepositoryMock())
   ];
 }
 
