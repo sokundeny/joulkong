@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:joulkong/data/repositories/stations/station_repository.dart';
 import 'package:joulkong/data/repositories/user/user_repository.dart';
+import 'package:joulkong/data/repositories/bikes/bike_repository.dart';
 import 'package:joulkong/model/bike.dart';
 import 'package:joulkong/model/station.dart';
 import 'package:joulkong/model/subscribtion.dart';
@@ -11,6 +12,7 @@ enum BookingStep { loadingUser, selectPass, selectBike, booking, success, error 
 class BookingViewModel extends ChangeNotifier {
   final StationRepository stationRepo;
   final UserRepository userRepo;
+  final BikeRepository bikeRepo; 
   final Station station;
 
   BookingStep step = BookingStep.loadingUser;
@@ -18,9 +20,12 @@ class BookingViewModel extends ChangeNotifier {
   Bike? bookedBike;
   String? errorMessage;
 
+  List<Bike> bikes = []; 
+
   BookingViewModel({
     required this.stationRepo,
     required this.userRepo,
+    required this.bikeRepo, 
     required this.station,
   }) {
     _loadUser();
@@ -34,15 +39,23 @@ class BookingViewModel extends ChangeNotifier {
     try {
       currentUser = await userRepo.fetchCurrentUser();
 
-      step = currentUser!.hasActivePass
-          ? BookingStep.selectBike
-          : BookingStep.selectPass;
+      if (currentUser!.hasActivePass) {
+        await _loadBikes(); // ✅ LOAD BIKES HERE
+        step = BookingStep.selectBike;
+      } else {
+        step = BookingStep.selectPass;
+      }
     } catch (e) {
       errorMessage = e.toString();
       step = BookingStep.error;
     }
 
     notifyListeners();
+  }
+  Future<void> _loadBikes() async {
+    final result = await bikeRepo.fetchBikesByIds(station.bikeIds);
+
+    bikes = result.where((b) => b.isAvailable).toList();
   }
 
   //pass
@@ -54,6 +67,7 @@ class BookingViewModel extends ChangeNotifier {
       await userRepo.purchasePass(type);
       currentUser = await userRepo.fetchCurrentUser();
 
+      await _loadBikes();
       step = BookingStep.selectBike;
     } catch (e) {
       errorMessage = e.toString();
@@ -71,7 +85,7 @@ class BookingViewModel extends ChangeNotifier {
     try {
       await stationRepo.bookBike(station.id, bikeId);
 
-      bookedBike = station.bikes.firstWhere((b) => b.id == bikeId);
+      bookedBike = bikes.firstWhere((b) => b.id == bikeId); 
 
       step = BookingStep.success;
     } catch (e) {
@@ -84,7 +98,7 @@ class BookingViewModel extends ChangeNotifier {
 
   //status validate
   String? get blockingReason {
-    if (station.availableBikes.isEmpty) {
+    if (bikes.isEmpty) {
       return "No bikes available";
     }
 
@@ -96,9 +110,10 @@ class BookingViewModel extends ChangeNotifier {
       return "You need a pass to book a bike";
     }
 
-    return null; 
+    return null;
   }
 
   bool get canBook => blockingReason == null;
-  List<Bike> get availableBikes => station.availableBikes;
+
+  List<Bike> get availableBikes => bikes; 
 }
