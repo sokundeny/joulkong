@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:joulkong/model/bike.dart';
 import 'package:joulkong/model/dock.dart';
-import 'package:joulkong/model/user.dart';
 import 'package:joulkong/ui/state/app_state.dart';
 
 enum BookingStep {
-  loadingUser,
   selectPass,
   selectBike,
   booking,
@@ -17,8 +15,7 @@ class BookingViewModel extends ChangeNotifier {
   Dock dock;
   final AppState appState;
 
-  BookingStep step = BookingStep.loadingUser;
-  User? currentUser;
+  BookingStep step = BookingStep.selectPass;
   Bike? bookedBike;
   String? errorMessage;
 
@@ -29,7 +26,6 @@ class BookingViewModel extends ChangeNotifier {
   }
 
   void _onAppStateChanged() {
-    // re-evaluate step when appState changes
     if (appState.isSubscribed && step == BookingStep.selectPass) {
       step = BookingStep.selectBike;
     }
@@ -37,23 +33,28 @@ class BookingViewModel extends ChangeNotifier {
   }
 
   void init() {
+    // Load bikes available
+    if (dock.bikeId != null) {
+      bikes = appState.fetchBikesByIds([dock.bikeId!]);
+    }
+
     if (appState.isSubscribed) {
       step = BookingStep.selectBike;
     } else {
       step = BookingStep.selectPass;
     }
+
     appState.addListener(_onAppStateChanged);
     notifyListeners();
   }
 
-  // booking
   Future<void> bookBike(String bikeId) async {
     step = BookingStep.booking;
     notifyListeners();
 
     try {
       await appState.bookBike(bikeId);
-
+      bookedBike = bikes.firstWhere((b) => b.id == bikeId);
       step = BookingStep.success;
     } catch (e) {
       errorMessage = e.toString();
@@ -63,20 +64,8 @@ class BookingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  //status validate
   String? get blockingReason {
-    if (bikes.isEmpty) {
-      return "No bikes available";
-    }
-
-    if (currentUser == null) {
-      return "Loading user...";
-    }
-
-    if (!currentUser!.hasActivePass) {
-      return "You need a pass to book a bike";
-    }
-
+    if (bikes.isEmpty) return "No bikes available";
     return null;
   }
 
