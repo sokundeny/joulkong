@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:joulkong/ui/screens/map/map_screen.dart';
+import 'package:joulkong/ui/screens/subscribtion/subscription_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:joulkong/ui/theme/theme.dart';
 
@@ -24,7 +25,7 @@ class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    MapScreen(), MapScreen(), MapScreen()
+    MapScreen(), SubscriptionScreen(), MapScreen()
   ];
 
   @override
@@ -35,6 +36,10 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       home: Scaffold(
+        appBar: AppBar(
+          title: Text("Joul Kong"),
+          centerTitle: false,
+        ),
         body: _pages[_currentIndex],
 
         bottomNavigationBar: BottomNavigationBar(
@@ -46,7 +51,7 @@ class _MyAppState extends State<MyApp> {
           },
           items: [
             BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
-            BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
+            BottomNavigationBarItem(icon: Icon(Icons.subscriptions), label: 'Pass'),
             BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
           ],
         ),
