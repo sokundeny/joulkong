@@ -10,4 +10,8 @@ class AppState extends ChangeNotifier {
   }
 
   bool get isSubscribed => userSubscription?.isActive ?? false;
+
+  void bookBike() {
+    notifyListeners();
+  }
 }

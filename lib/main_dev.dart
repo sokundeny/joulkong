@@ -7,6 +7,8 @@ import 'package:joulkong/data/repositories/stations/station_repository.dart';
 import 'package:joulkong/data/repositories/stations/station_repository_mock.dart';
 import 'package:joulkong/data/repositories/subscribtions/subscription_repository.dart';
 import 'package:joulkong/data/repositories/subscribtions/subscription_repository_mock.dart';
+import 'package:joulkong/data/repositories/user/user_repository.dart';
+import 'package:joulkong/data/repositories/user/user_repository_mock.dart';
 import 'package:joulkong/ui/state/app_state.dart';
 import 'package:provider/provider.dart';
 import 'main_common.dart';
@@ -19,7 +21,9 @@ List<InheritedProvider> get devProviders {
     Provider<BikeRepository>(create: (_) => BikeRepositoryMock()),
     Provider<DockRepository>(create: (_) => DockRepositoryMock()),
     Provider<SubscriptionRepository>(create: (_)=>SubscriptionRepositoryMock()),
-    ChangeNotifierProvider<AppState>(create: (_)=>AppState())
+    ChangeNotifierProvider<AppState>(create: (_)=>AppState()),
+    Provider<StationRepository>(create: (_) => StationRepositoryMock()),
+    Provider<UserRepository>(create: (_) => UserRepositoryMock()),
   ];
 }
 

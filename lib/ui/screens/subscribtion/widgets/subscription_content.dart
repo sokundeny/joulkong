@@ -8,7 +8,10 @@ import 'package:provider/provider.dart';
 import 'package:joulkong/ui/utils/async_value.dart';
 
 class SubscriptionContent extends StatelessWidget {
-  const SubscriptionContent({super.key});
+
+  final bool isTemp;
+  
+  const SubscriptionContent({super.key,this.isTemp=false});
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +96,6 @@ class SubscriptionContent extends StatelessWidget {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
                                   color: const Color(
@@ -176,25 +178,18 @@ class SubscriptionContent extends StatelessWidget {
                         const SizedBox(height: 32),
 
                         // Divider
-                        Container(
-                          height: 1,
-                        ),
+                        Container(height: 1),
 
                         const SizedBox(height: 24),
 
                         // Expiry row
                         Row(
                           children: [
-                            const Icon(
-                              Icons.calendar_today_rounded,
-                              size: 15,
-                            ),
+                            const Icon(Icons.calendar_today_rounded, size: 15),
                             const SizedBox(width: 8),
                             const Text(
                               'Valid until',
-                              style: TextStyle(
-                                fontSize: 13,
-                              ),
+                              style: TextStyle(fontSize: 13),
                             ),
                             const Spacer(),
                             Text(
@@ -219,6 +214,7 @@ class SubscriptionContent extends StatelessWidget {
     }
 
     return Scaffold(
+      appBar: isTemp?AppBar():null,
       body: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(
@@ -249,6 +245,9 @@ class SubscriptionContent extends StatelessWidget {
                       onBuyPass: () {
                         vm.onBuyPass();
                         Navigator.pop(context);
+                        if(isTemp){
+                          Navigator.pop(context);
+                        }
                       },
                     ),
                   ),

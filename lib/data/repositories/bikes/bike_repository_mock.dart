@@ -1,4 +1,3 @@
-
 import 'package:joulkong/data/repositories/bikes/bike_repository.dart';
 import 'package:joulkong/model/bike.dart';
 
@@ -7,7 +6,7 @@ class BikeRepositoryMock extends BikeRepository {
     Bike(id: 'BIKE_001', status: BikeStatus.available),
     Bike(id: 'BIKE_002', status: BikeStatus.inUse),
     Bike(id: 'BIKE_003', status: BikeStatus.available),
-    Bike(id: 'BIKE_004', status: BikeStatus.maintenance),
+    Bike(id: 'BIKE_004', status: BikeStatus.booked),
     Bike(id: 'BIKE_005', status: BikeStatus.available),
     Bike(id: 'BIKE_006', status: BikeStatus.available),
     Bike(id: 'BIKE_007', status: BikeStatus.inUse),
@@ -21,4 +20,18 @@ class BikeRepositoryMock extends BikeRepository {
       () => _bikes.where((bike) => ids.contains(bike.id)).toList(),
     );
   }
-} 
+
+  @override
+  Future<Bike> fetchBikesById(String id) async {
+    return Future.delayed(
+      const Duration(seconds: 0),
+      () => _bikes.firstWhere((bike) => id == bike.id),
+    );
+  }
+
+  @override
+  Future<void> bookBike(String id) async {
+    final bike = _bikes.firstWhere((bike) => bike.id == id);
+    bike.status = BikeStatus.booked;
+  }
+}

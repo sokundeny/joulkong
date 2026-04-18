@@ -6,16 +6,17 @@ import 'package:joulkong/ui/state/app_state.dart';
 import 'package:provider/provider.dart';
 
 class SubscriptionScreen extends StatelessWidget {
-  const SubscriptionScreen({super.key});
+  bool isTemp;
+  SubscriptionScreen({super.key,this.isTemp=false});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context)=> SubscriptionViewModel(
+      create: (context) => SubscriptionViewModel(
         subscribtionRepository: context.read<SubscriptionRepository>(),
-        appState: context.read<AppState>()
+        appState: context.read<AppState>(),
       ),
-      child: SubscriptionContent(),
+      child: SubscriptionContent(isTemp: isTemp,),
     );
   }
 }

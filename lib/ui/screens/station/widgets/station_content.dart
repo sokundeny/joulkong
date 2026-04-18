@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:joulkong/model/dock.dart';
+import 'package:joulkong/ui/screens/booking/booking_screen.dart';
 import 'package:joulkong/ui/screens/station/view_model/station_item_data.dart';
 import 'package:joulkong/ui/screens/station/view_model/station_view_model.dart';
 import 'package:joulkong/ui/screens/station/widgets/dock_card.dart';
-import 'package:joulkong/ui/theme/theme.dart';
 import 'package:joulkong/ui/utils/async_value.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +28,15 @@ class StationContent extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Unlocking ${dock.bikeId} at Dock ${dock.number}'),
+      ),
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BookingScreen(
+          dock: dock,
+        ),
       ),
     );
   }

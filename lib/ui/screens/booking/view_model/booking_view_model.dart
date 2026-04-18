@@ -1,79 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:joulkong/data/repositories/stations/station_repository.dart';
-import 'package:joulkong/data/repositories/user/user_repository.dart';
 import 'package:joulkong/data/repositories/bikes/bike_repository.dart';
 import 'package:joulkong/model/bike.dart';
-import 'package:joulkong/model/station.dart';
-import 'package:joulkong/model/subscribtion.dart';
+import 'package:joulkong/model/dock.dart';
 import 'package:joulkong/model/user.dart';
+import 'package:joulkong/ui/state/app_state.dart';
 
-enum BookingStep { loadingUser, selectPass, selectBike, booking, success, error }
+enum BookingStep {
+  loadingUser,
+  selectPass,
+  selectBike,
+  booking,
+  success,
+  error,
+}
 
 class BookingViewModel extends ChangeNotifier {
-  final StationRepository stationRepo;
-  final UserRepository userRepo;
-  final BikeRepository bikeRepo; 
-  final Station station;
+  Dock dock;
+  final AppState appState;
+  final BikeRepository bikeRepo;
 
   BookingStep step = BookingStep.loadingUser;
   User? currentUser;
   Bike? bookedBike;
   String? errorMessage;
 
-  List<Bike> bikes = []; 
+  List<Bike> bikes = [];
 
-  BookingViewModel({
-    required this.stationRepo,
-    required this.userRepo,
-    required this.bikeRepo, 
-    required this.station,
-  }) {
-    _loadUser();
+  BookingViewModel({required this.dock, required this.appState, required this.bikeRepo}) {
+    init();
   }
 
-  //load
-  Future<void> _loadUser() async {
-    step = BookingStep.loadingUser;
-    notifyListeners();
-
-    try {
-      currentUser = await userRepo.fetchCurrentUser();
-
-      if (currentUser!.hasActivePass) {
-        await _loadBikes(); // ✅ LOAD BIKES HERE
-        step = BookingStep.selectBike;
-      } else {
-        step = BookingStep.selectPass;
-      }
-    } catch (e) {
-      errorMessage = e.toString();
-      step = BookingStep.error;
-    }
-
-    notifyListeners();
-  }
-  Future<void> _loadBikes() async {
-    final result = await bikeRepo.fetchBikesByIds(station.bikeIds);
-
-    bikes = result.where((b) => b.isAvailable).toList();
-  }
-
-  //pass
-  Future<void> purchasePass(PassType type) async {
-    step = BookingStep.loadingUser;
-    notifyListeners();
-
-    try {
-      await userRepo.purchasePass(type);
-      currentUser = await userRepo.fetchCurrentUser();
-
-      await _loadBikes();
+  void init() {
+    if (appState.isSubscribed) {
       step = BookingStep.selectBike;
-    } catch (e) {
-      errorMessage = e.toString();
-      step = BookingStep.error;
+    } else {
+      step = BookingStep.selectPass;
     }
-
     notifyListeners();
   }
 
@@ -83,9 +45,10 @@ class BookingViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await stationRepo.bookBike(station.id, bikeId);
+      await bikeRepo.bookBike(bikeId);
+      bookedBike = await bikeRepo.fetchBikesById(bikeId);
 
-      bookedBike = bikes.firstWhere((b) => b.id == bikeId); 
+      appState.bookBike();
 
       step = BookingStep.success;
     } catch (e) {
@@ -115,5 +78,5 @@ class BookingViewModel extends ChangeNotifier {
 
   bool get canBook => blockingReason == null;
 
-  List<Bike> get availableBikes => bikes; 
+  List<Bike> get availableBikes => bikes;
 }
