@@ -46,7 +46,6 @@ class StationContent extends StatelessWidget {
     StationViewModel mv = context.watch<StationViewModel>();
     AsyncValue<List<StationItemData>> asyncValue = mv.data;
     Widget content = const Center(child: Text('No State'));
-    String title = mv.selectedStation.name;
 
     switch (asyncValue.state) {
       case AsyncValueState.loading:
@@ -64,48 +63,133 @@ class StationContent extends StatelessWidget {
 
       case AsyncValueState.success:
         List<StationItemData> docks = asyncValue.data!;
-        title = mv.selectedStation.name;
+        int totalDocks = docks.length;
+        int bikesCount = docks.where((d) => d.dock.bikeId != null).length;
+        int availableDocks = totalDocks - bikesCount;
+        double progress = totalDocks == 0 ? 0 : bikesCount / totalDocks;
 
-        content = Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Dock Status',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+        content = Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: Container(
+                width: double.infinity,
+                color: Colors.grey[100],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          mv.selectedStation.name,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        // const SizedBox(height: 2),
+                        Text(
+                          'ID: ${mv.selectedStation.id}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600]),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Available Docks: $availableDocks',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
 
-              const SizedBox(height: 16),
+                    SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Positioned.fill(
+                            child: CircularProgressIndicator(
+                              value: progress,
+                              strokeWidth: 4,
+                              strokeCap: StrokeCap.round,
+                              backgroundColor: Colors.grey[300],
+                            ),
+                          ),
 
-              Expanded(
-                child: GridView.builder(
-                  itemCount: docks.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: 0.9,
-                  ),
-                  itemBuilder: (context, index) {
-                    final dock = docks[index];
-
-                    return DockCard(
-                      number: dock.dock.number,
-                      bikeId: dock.dock.bikeId,
-                      isLocked: dock.dock.isLocked,
-                      onUnlock: () => _unlockDock(context, dock.dock),
-                    );
-                  },
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.pedal_bike, size: 20),
+                              Text(
+                                '$bikesCount',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+            Expanded(
+              child: Container(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Dock Status',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      Expanded(
+                        child: GridView.builder(
+                          itemCount: docks.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 12,
+                                crossAxisSpacing: 12,
+                                childAspectRatio: 0.8,
+                              ),
+                          itemBuilder: (context, index) {
+                            final dock = docks[index];
+
+                            return DockCard(
+                              number: dock.dock.number,
+                              bikeId: dock.dock.bikeId,
+                              isLocked: dock.dock.isLocked,
+                              onUnlock: () => _unlockDock(context, dock.dock),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         );
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text('Station Info')),
       body: content,
     );
   }

@@ -1,30 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:joulkong/data/repositories/bikes/bike_repository.dart';
+import 'package:joulkong/data/repositories/docks/dock_repository.dart';
 import 'package:joulkong/data/repositories/stations/station_repository.dart';
-import 'package:joulkong/model/station.dart';
+import 'package:joulkong/model/bike.dart';
+import 'package:joulkong/ui/screens/map/view_model/map_data.dart';
 import 'package:joulkong/ui/utils/async_value.dart';
 
 class MapViewModel extends ChangeNotifier {
   final StationRepository stationRepo;
+  final DockRepository dockRepo;
+  final BikeRepository bikeRepo;
 
-  AsyncValue<List<Station>> data = AsyncValue.loading();
+  AsyncValue<List<MapData>> data = AsyncValue.loading();
 
-  MapViewModel({required this.stationRepo}) {
-    fetchStations();
+  MapViewModel({required this.stationRepo, required this.dockRepo, required this.bikeRepo}) {
+    fetchMapData();
   }
 
-  Future<void> fetchStations() async {
+  Future<void> fetchMapData() async {
     data = AsyncValue.loading();
     notifyListeners();
 
     try {
       final stations = await stationRepo.fetchStations();
-      data = AsyncValue.success(stations);
+
+      final futures = stations.map((station) async {
+        final docks = await dockRepo.fetchDocksByStation(station.id);
+
+        final bikeIds = docks
+            .where((d) => d.bikeId != null)
+            .map((d) => d.bikeId!)
+            .toList();
+
+        final bikes = bikeIds.isEmpty
+            ? <Bike>[]
+            : await bikeRepo.fetchBikesByIds(bikeIds);
+
+        return MapData(
+          station: station,
+          docks: docks.length,
+          bikes: bikes.length,
+        );
+      }).toList();
+
+      final result = await Future.wait(futures);
+
+      data = AsyncValue.success(result);
     } catch (e) {
       data = AsyncValue.error(e.toString());
     }
 
     notifyListeners();
   }
-
-
 }
