@@ -4,16 +4,27 @@ import 'package:joulkong/data/repositories/docks/dock_repository.dart';
 import 'package:joulkong/data/repositories/stations/station_repository.dart';
 import 'package:joulkong/model/bike.dart';
 import 'package:joulkong/ui/screens/map/view_model/map_data.dart';
+import 'package:joulkong/ui/state/app_state.dart';
 import 'package:joulkong/ui/utils/async_value.dart';
 
 class MapViewModel extends ChangeNotifier {
   final StationRepository stationRepo;
   final DockRepository dockRepo;
-  final BikeRepository bikeRepo;
+  final AppState appState;
 
   AsyncValue<List<MapData>> data = AsyncValue.loading();
 
-  MapViewModel({required this.stationRepo, required this.dockRepo, required this.bikeRepo}) {
+  MapViewModel({
+    required this.stationRepo,
+    required this.dockRepo,
+    required this.appState,
+  }) {
+    appState.addListener(_onAppStateChanged);
+    fetchMapData();
+  }
+
+  void _onAppStateChanged() {
+    notifyListeners();
     fetchMapData();
   }
 
@@ -32,14 +43,12 @@ class MapViewModel extends ChangeNotifier {
             .map((d) => d.bikeId!)
             .toList();
 
-        final bikes = bikeIds.isEmpty
-            ? <Bike>[]
-            : await bikeRepo.fetchBikesByIds(bikeIds);
+        final bikes = bikeIds.isEmpty ? <Bike>[] : appState.fetchBikesByIds(bikeIds);
 
         return MapData(
           station: station,
           docks: docks.length,
-          bikes: bikes.length,
+          bikes: bikes.where((bike)=>bike.status==BikeStatus.available).length,
         );
       }).toList();
 
@@ -51,5 +60,11 @@ class MapViewModel extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    appState.removeListener(_onAppStateChanged);
+    super.dispose();
   }
 }

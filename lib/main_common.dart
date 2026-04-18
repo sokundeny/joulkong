@@ -25,7 +25,7 @@ class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    MapScreen(), SubscriptionScreen(), MapScreen()
+    MapScreen(), SubscriptionScreen()
   ];
 
   @override
@@ -52,7 +52,6 @@ class _MyAppState extends State<MyApp> {
           items: [
             BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
             BottomNavigationBarItem(icon: Icon(Icons.subscriptions), label: 'Pass'),
-            BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:joulkong/model/bike.dart';
 import 'package:joulkong/model/dock.dart';
 import 'package:joulkong/ui/screens/booking/booking_screen.dart';
 import 'package:joulkong/ui/screens/station/view_model/station_item_data.dart';
@@ -170,10 +171,18 @@ class StationContent extends StatelessWidget {
                           itemBuilder: (context, index) {
                             final dock = docks[index];
 
+                            final bike = dock.dock.bikeId == null
+                                ? null
+                                : mv.appState.bikes
+                                      .where((b) => b.id == dock.dock.bikeId)
+                                      .cast<Bike?>()
+                                      .firstOrNull;
+
                             return DockCard(
                               number: dock.dock.number,
                               bikeId: dock.dock.bikeId,
                               isLocked: dock.dock.isLocked,
+                              status: bike?.status,
                               onUnlock: () => _unlockDock(context, dock.dock),
                             );
                           },

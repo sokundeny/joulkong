@@ -17,7 +17,6 @@ enum BookingStep {
 class BookingViewModel extends ChangeNotifier {
   Dock dock;
   final AppState appState;
-  final BikeRepository bikeRepo;
 
   BookingStep step = BookingStep.loadingUser;
   User? currentUser;
@@ -26,8 +25,16 @@ class BookingViewModel extends ChangeNotifier {
 
   List<Bike> bikes = [];
 
-  BookingViewModel({required this.dock, required this.appState, required this.bikeRepo}) {
+  BookingViewModel({required this.dock, required this.appState}) {
     init();
+  }
+
+  void _onAppStateChanged() {
+    // re-evaluate step when appState changes
+    if (appState.isSubscribed && step == BookingStep.selectPass) {
+      step = BookingStep.selectBike;
+    }
+    notifyListeners();
   }
 
   void init() {
@@ -36,6 +43,7 @@ class BookingViewModel extends ChangeNotifier {
     } else {
       step = BookingStep.selectPass;
     }
+    appState.addListener(_onAppStateChanged);
     notifyListeners();
   }
 
@@ -45,10 +53,7 @@ class BookingViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await bikeRepo.bookBike(bikeId);
-      bookedBike = await bikeRepo.fetchBikesById(bikeId);
-
-      appState.bookBike();
+      await appState.bookBike(bikeId);
 
       step = BookingStep.success;
     } catch (e) {
@@ -79,4 +84,10 @@ class BookingViewModel extends ChangeNotifier {
   bool get canBook => blockingReason == null;
 
   List<Bike> get availableBikes => bikes;
+
+  @override
+  void dispose() {
+    appState.removeListener(_onAppStateChanged);
+    super.dispose();
+  }
 }

@@ -4,6 +4,7 @@ import 'package:joulkong/data/repositories/docks/dock_repository.dart';
 import 'package:joulkong/data/repositories/stations/station_repository.dart';
 import 'package:joulkong/ui/screens/map/view_model/map_view_model.dart';
 import 'package:joulkong/ui/screens/map/widgets/map_content.dart';
+import 'package:joulkong/ui/state/app_state.dart';
 import 'package:provider/provider.dart';
 
 class MapScreen extends StatelessWidget {
@@ -13,7 +14,7 @@ class MapScreen extends StatelessWidget {
       create: (context) => MapViewModel(
         stationRepo: context.read<StationRepository>(),
         dockRepo: context.read<DockRepository>(),
-        bikeRepo: context.read<BikeRepository>()
+        appState: context.read<AppState>()
       ),
       child: MapContent(),  
     );

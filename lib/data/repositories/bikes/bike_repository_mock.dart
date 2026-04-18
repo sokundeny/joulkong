@@ -4,12 +4,12 @@ import 'package:joulkong/model/bike.dart';
 class BikeRepositoryMock extends BikeRepository {
   final List<Bike> _bikes = [
     Bike(id: 'BIKE_001', status: BikeStatus.available),
-    Bike(id: 'BIKE_002', status: BikeStatus.inUse),
+    Bike(id: 'BIKE_002', status: BikeStatus.available),
     Bike(id: 'BIKE_003', status: BikeStatus.available),
-    Bike(id: 'BIKE_004', status: BikeStatus.booked),
+    Bike(id: 'BIKE_004', status: BikeStatus.available),
     Bike(id: 'BIKE_005', status: BikeStatus.available),
     Bike(id: 'BIKE_006', status: BikeStatus.available),
-    Bike(id: 'BIKE_007', status: BikeStatus.inUse),
+    Bike(id: 'BIKE_007', status: BikeStatus.available),
     Bike(id: 'BIKE_008', status: BikeStatus.available),
   ];
 
@@ -30,8 +30,7 @@ class BikeRepositoryMock extends BikeRepository {
   }
 
   @override
-  Future<void> bookBike(String id) async {
-    final bike = _bikes.firstWhere((bike) => bike.id == id);
-    bike.status = BikeStatus.booked;
+  Future<List<Bike>> fetchAllBike() async {
+    return _bikes;
   }
 }

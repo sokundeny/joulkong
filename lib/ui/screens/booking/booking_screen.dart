@@ -19,7 +19,6 @@ class BookingScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => BookingViewModel(
         appState: context.read<AppState>(),
-        bikeRepo: context.read<BikeRepository>(),
         dock: dock,
       ),
       child: BookingContent(),

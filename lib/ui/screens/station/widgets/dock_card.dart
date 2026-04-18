@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:joulkong/model/bike.dart';
 import 'package:joulkong/ui/theme/theme.dart';
 
 class DockCard extends StatelessWidget {
   final int number;
   final String? bikeId;
+  final BikeStatus? status;
   final bool isLocked;
   final VoidCallback? onUnlock;
 
@@ -12,14 +14,15 @@ class DockCard extends StatelessWidget {
     required this.number,
     required this.bikeId,
     required this.isLocked,
+    this.status,
     this.onUnlock,
   });
 
   @override
   Widget build(BuildContext context) {
     final bool hasBike = bikeId != null;
-    final bool isAvailable = hasBike && !isLocked;
-
+    final bool isAvailable =
+        hasBike && !isLocked && this.status == BikeStatus.available;
     Color color;
     String status;
 
@@ -29,6 +32,10 @@ class DockCard extends StatelessWidget {
     } else if (hasBike) {
       color = AppTheme.secondaryColor;
       status = "Available";
+      if (this.status != BikeStatus.available) {
+        status = "Booked";
+        color = Colors.grey;
+      }
     } else {
       color = Colors.grey;
       status = "Empty";
@@ -67,7 +74,11 @@ class DockCard extends StatelessWidget {
               if (hasBike)
                 Text(
                   bikeId!,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[600]),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
+                  ),
                 ),
             ],
           ),

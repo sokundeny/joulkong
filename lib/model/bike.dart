@@ -2,7 +2,7 @@ enum BikeStatus { available, booked, inUse, maintenance }
 
 class Bike {
   final String id;
-  BikeStatus status;
+  final BikeStatus status;
 
   Bike({required this.id, this.status = BikeStatus.available});
 

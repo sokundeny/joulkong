@@ -5,16 +5,27 @@ import 'package:joulkong/model/bike.dart';
 import 'package:joulkong/model/dock.dart';
 import 'package:joulkong/model/station.dart';
 import 'package:joulkong/ui/screens/station/view_model/station_item_data.dart';
+import 'package:joulkong/ui/state/app_state.dart';
 import 'package:joulkong/ui/utils/async_value.dart';
 
 class StationViewModel extends ChangeNotifier {
   final DockRepository dockRepo;
-  final BikeRepository bikeRepo;
+  final AppState appState;
   final Station selectedStation;
 
   AsyncValue<List<StationItemData>> data = AsyncValue.loading();
 
-  StationViewModel({required this.dockRepo, required this.bikeRepo, required this.selectedStation}) {
+  StationViewModel({
+    required this.dockRepo,
+    required this.appState,
+    required this.selectedStation,
+  }) {
+    fetchDocks();
+    appState.addListener(_onAppStateChanged);
+  }
+
+  void _onAppStateChanged() {
+    notifyListeners();
     fetchDocks();
   }
 
@@ -30,7 +41,7 @@ class StationViewModel extends ChangeNotifier {
           .map((d) => d.bikeId!)
           .toList();
 
-      final List<Bike> bikes = await bikeRepo.fetchBikesByIds(bikeIds);
+      final List<Bike> bikes = appState.fetchBikesByIds(bikeIds);
 
       final Map<String, Bike> bikeMap = {for (var bike in bikes) bike.id: bike};
 

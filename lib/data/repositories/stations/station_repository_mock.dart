@@ -154,6 +154,5 @@ class StationRepositoryMock extends StationRepository {
   Future<void> bookBike(String stationId, String bikeId) async {
     final station = _stations.firstWhere((s) => s.id == stationId);
     final bike = station.bikes.firstWhere((b) => b.id == bikeId);
-    bike.status = BikeStatus.booked;
   }
 }
