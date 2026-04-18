@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:joulkong/data/repositories/bikes/bike_repository.dart';
 import 'package:joulkong/model/bike.dart';
 import 'package:joulkong/model/dock.dart';
 import 'package:joulkong/model/user.dart';

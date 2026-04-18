@@ -47,9 +47,6 @@ class DockCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: color, width: 2),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 6),
-        ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -66,7 +63,7 @@ class DockCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.pedal_bike,
-                color: isAvailable ? AppTheme.secondaryColor : Colors.grey,
+                color: color,
                 size: 30,
               ),
               const SizedBox(height: 7),

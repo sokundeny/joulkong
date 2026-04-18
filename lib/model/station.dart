@@ -1,4 +1,3 @@
-import 'package:joulkong/model/bike.dart';
 
 class Station {
   final String id;
@@ -6,20 +5,20 @@ class Station {
   final double latitute;
   final double longtitute;
 
-  final List<String> bikeIds; 
+  // final List<String> bikeIds; 
 
-  final List<Bike> bikes; 
+  // final List<Bike> bikes; 
 
   Station({
     required this.id,
     required this.name,
     required this.latitute,
     required this.longtitute,
-    this.bikeIds = const [], 
-    this.bikes = const [],
+    // this.bikeIds = const [], 
+    // this.bikes = const [],
   });
-  List<Bike> get availableBikes =>
-      bikes.where((b) => b.isAvailable).toList();
+  // List<Bike> get availableBikes =>
+      // bikes.where((b) => b.isAvailable).toList();
 
-  int get availableBikeCount => availableBikes.length;
+  // int get availableBikeCount => availableBikes.length;
 }

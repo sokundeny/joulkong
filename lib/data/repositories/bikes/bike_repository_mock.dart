@@ -33,4 +33,25 @@ class BikeRepositoryMock extends BikeRepository {
   Future<List<Bike>> fetchAllBike() async {
     return _bikes;
   }
+
+  @override 
+  Future<void> bookBike(String id) async {
+    return Future.delayed(const Duration(seconds: 1), () {
+      final index = _bikes.indexWhere((bike) => bike.id == id);
+
+      if (index == -1) {
+        throw Exception('Bike not found');
+      }
+
+      final bike = _bikes[index];
+
+      if (bike.status != BikeStatus.available) {
+        throw Exception('Bike is not available');
+      }
+
+      final updatedBike = bike.copyWith(status: BikeStatus.booked);
+      _bikes[index] = updatedBike;
+
+    });
+  }
 }

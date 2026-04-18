@@ -19,6 +19,13 @@ class DockRepositoryMock extends DockRepository {
     Dock(number: 4, stationId: '00003', bikeId: 'BIKE_008', isLocked: true),
   ];
 
+  @override
+  Future<List<Dock>> fetchDocks() async {
+    return Future.delayed(
+      const Duration(seconds: 1),
+      () => _docks
+    );
+  }
 
   @override
   Future<List<Dock>> fetchDocksByStation(String stationId) async {

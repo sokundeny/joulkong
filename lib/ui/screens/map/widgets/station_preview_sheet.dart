@@ -128,7 +128,7 @@ class StationPreviewSheet extends StatelessWidget {
                   children: [
                     const Icon(Icons.directions_bike, color: AppTheme.primaryColor),
                     const SizedBox(width: 6),
-                    Text('Bike: $totalBikes'),
+                    Text('Bike: $totalBikes', style: TextStyle(fontWeight: FontWeight.w600)),
                   ],
                 ),
 
@@ -138,7 +138,7 @@ class StationPreviewSheet extends StatelessWidget {
                   children: [
                     const Icon(Icons.local_parking, color: AppTheme.primaryColor),
                     const SizedBox(width: 6),
-                    Text('Dock: $totalDocks'),
+                    Text('Dock: $totalDocks', style: TextStyle(fontWeight: FontWeight.w600)),
                   ],
                 ),
 

@@ -6,8 +6,8 @@ import 'package:joulkong/ui/state/app_state.dart';
 import 'package:provider/provider.dart';
 
 class SubscriptionScreen extends StatelessWidget {
-  bool isTemp;
-  SubscriptionScreen({super.key,this.isTemp=false});
+  final bool isTemp;
+  SubscriptionScreen({super.key, this.isTemp=false});
 
   @override
   Widget build(BuildContext context) {

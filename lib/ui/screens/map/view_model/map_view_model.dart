@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:joulkong/data/repositories/bikes/bike_repository.dart';
 import 'package:joulkong/data/repositories/docks/dock_repository.dart';
 import 'package:joulkong/data/repositories/stations/station_repository.dart';
 import 'package:joulkong/model/bike.dart';
+import 'package:joulkong/model/dock.dart';
 import 'package:joulkong/ui/screens/map/view_model/map_data.dart';
 import 'package:joulkong/ui/state/app_state.dart';
 import 'package:joulkong/ui/utils/async_value.dart';
@@ -24,7 +24,6 @@ class MapViewModel extends ChangeNotifier {
   }
 
   void _onAppStateChanged() {
-    notifyListeners();
     fetchMapData();
   }
 
@@ -34,25 +33,47 @@ class MapViewModel extends ChangeNotifier {
 
     try {
       final stations = await stationRepo.fetchStations();
+      final docks = await dockRepo.fetchDocks();
 
-      final futures = stations.map((station) async {
-        final docks = await dockRepo.fetchDocksByStation(station.id);
+      final bikeIds = docks
+          .where((dock) => dock.bikeId != null)
+          .map((dock) => dock.bikeId!)
+          .toSet()
+          .toList();
 
-        final bikeIds = docks
-            .where((d) => d.bikeId != null)
-            .map((d) => d.bikeId!)
-            .toList();
+      final List<Bike> bikes = bikeIds.isEmpty
+          ? <Bike>[]
+          : appState.fetchBikesByIds(bikeIds);
 
-        final bikes = bikeIds.isEmpty ? <Bike>[] : appState.fetchBikesByIds(bikeIds);
+      final Map<String, List<Dock>> dockByStation = {};
+      for (final dock in docks) {
+        dockByStation.putIfAbsent(dock.stationId, () => <Dock>[]);
+        dockByStation[dock.stationId]!.add(dock);
+      }
+
+      final Map<String, Bike> bikeById = {
+        for (final bike in bikes) bike.id: bike,
+      };
+
+      final List<MapData> result = stations.map((station) {
+        final List<Dock> stationDocks = dockByStation[station.id] ?? <Dock>[];
+
+        final int bikeCount = stationDocks.where((dock) {
+          final bikeId = dock.bikeId;
+          if (bikeId == null) return false;
+
+          final bike = bikeById[bikeId];
+          if (bike == null) return false;
+
+          return bike.status == BikeStatus.available;
+        }).length;
 
         return MapData(
           station: station,
-          docks: docks.length,
-          bikes: bikes.where((bike)=>bike.status==BikeStatus.available).length,
+          docks: stationDocks.length,
+          bikes: bikeCount,
         );
       }).toList();
-
-      final result = await Future.wait(futures);
 
       data = AsyncValue.success(result);
     } catch (e) {
