@@ -3,9 +3,12 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:joulkong/model/station.dart';
 import 'package:joulkong/ui/screens/map/view_model/map_view_model.dart';
 import 'package:joulkong/ui/screens/map/widgets/station_marker.dart';
+import 'package:joulkong/ui/screens/station/station_screen.dart';
+import 'package:joulkong/ui/utils/animations_util.dart';
 import 'package:joulkong/ui/utils/async_value.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
+import 'package:joulkong/ui/screens/booking/booking_screen.dart';
 
 class MapContent extends StatelessWidget {
   const MapContent({super.key});
@@ -15,7 +18,7 @@ class MapContent extends StatelessWidget {
   Widget build(BuildContext context) {
     MapViewModel mv = context.watch<MapViewModel>();
     AsyncValue<List<Station>> asyncValue = mv.data;
-    Widget content = const Center(child: Text("No state"));
+    Widget content = const Center(child: Text('No State'));
 
     switch (asyncValue.state) {
       case AsyncValueState.loading:
@@ -42,20 +45,24 @@ class MapContent extends StatelessWidget {
             point: LatLng(station.latitute, station.longtitute),
             width: 50,
             height: 70,
-            child: StationMarker(
+            child: StationMarker( 
               number: index,
               onTap: () {
                 debugPrint('Tapped: ${station.name}');
+                Navigator.of(context).push(
+                  AnimationUtils.createRightToLeftRoute(
+                    StationScreen(selectedStation: station),
+                  ),
+                );
               },
             ),
           );
         }).toList();
 
         content = FlutterMap(
-          mapController: mv.mapController,
           options: MapOptions(
             initialCenter: LatLng(11.5564, 104.9282),
-            initialZoom: mv.zoom,
+            initialZoom: 16,
             interactionOptions: const InteractionOptions(
               flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
             ),
@@ -63,7 +70,7 @@ class MapContent extends StatelessWidget {
           children: [
             TileLayer(
               urlTemplate:
-                  'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png?api_key=' + API_KEY,
+                  'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png?api_key=$API_KEY',
               userAgentPackageName: 'JoulKongApp',
             ),
 
