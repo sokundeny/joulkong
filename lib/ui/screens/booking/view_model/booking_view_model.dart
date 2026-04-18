@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:joulkong/model/bike.dart';
 import 'package:joulkong/model/dock.dart';
-import 'package:joulkong/model/user.dart';
 import 'package:joulkong/ui/state/app_state.dart';
 
 enum BookingStep {
@@ -18,7 +17,6 @@ class BookingViewModel extends ChangeNotifier {
   final AppState appState;
 
   BookingStep step = BookingStep.loadingUser;
-  User? currentUser;
   Bike? bookedBike;
   String? errorMessage;
 
@@ -63,24 +61,6 @@ class BookingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  //status validate
-  String? get blockingReason {
-    if (bikes.isEmpty) {
-      return "No bikes available";
-    }
-
-    if (currentUser == null) {
-      return "Loading user...";
-    }
-
-    if (!currentUser!.hasActivePass) {
-      return "You need a pass to book a bike";
-    }
-
-    return null;
-  }
-
-  bool get canBook => blockingReason == null;
 
   List<Bike> get availableBikes => bikes;
 
