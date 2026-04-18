@@ -62,12 +62,12 @@ class DockCard extends StatelessWidget {
                 color: isAvailable ? AppTheme.secondaryColor : Colors.grey,
                 size: 30,
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 7),
               Text(status, style: TextStyle(color: color)),
               if (hasBike)
                 Text(
                   bikeId!,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[600]),
                 ),
             ],
           ),

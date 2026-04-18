@@ -1,4 +1,4 @@
-enum BikeStatus { available, booked, inUse }
+enum BikeStatus { available, booked, inUse, maintenance }
 
 class Bike {
   final String id;
